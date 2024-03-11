@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWork", "TestWork.csproj", "{70C1EA04-D23D-4B2C-9E08-935A32655CDF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{22248EA9-981F-4ECE-B06B-F3437FC8B67C} = {22248EA9-981F-4ECE-B06B-F3437FC8B67C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtLibrary.Sql", "..\ArtLibrary.SqlParams\ArtLibrary.Sql.csproj", "{22248EA9-981F-4ECE-B06B-F3437FC8B67C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70C1EA04-D23D-4B2C-9E08-935A32655CDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70C1EA04-D23D-4B2C-9E08-935A32655CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70C1EA04-D23D-4B2C-9E08-935A32655CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70C1EA04-D23D-4B2C-9E08-935A32655CDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22248EA9-981F-4ECE-B06B-F3437FC8B67C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22248EA9-981F-4ECE-B06B-F3437FC8B67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22248EA9-981F-4ECE-B06B-F3437FC8B67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22248EA9-981F-4ECE-B06B-F3437FC8B67C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2401C36C-861C-4A81-A74B-68012254CF7B}
+	EndGlobalSection
+EndGlobal
