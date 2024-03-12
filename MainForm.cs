@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using TestWork.Properties;
-using ArtLibrary.Sql;
+using ArtLibrary.Sql; // my custom library (Github: https://github.com/Artemio12/ArtLibrary.Sql)
 
 namespace TestWork
 {

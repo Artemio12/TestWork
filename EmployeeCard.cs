@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
-using ArtLibrary.Sql;
+using ArtLibrary.Sql; // my custom library (Github: https://github.com/Artemio12/ArtLibrary.Sql)
 using TestWork.Properties;
 
 namespace TestWork
