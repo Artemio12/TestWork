@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TestWork.Properties;
-using System.Diagnostics.CodeAnalysis;
 using ArtLibrary.Sql;
-using ArtLibrary.ControlLogic;
 
 namespace TestWork
 {
@@ -51,6 +44,7 @@ namespace TestWork
 
             employeeCard.UpdateButton.Enabled = false;
             employeeCard.DeleteButton.Enabled = false;
+            employeeCard.NewEmployeeButton.Enabled = false;
             employeeCard.PromoteButton.Enabled = false;
             employeeCard.Id = Convert.ToString(MaxID + 1);
             employeeCard.ShowDialog();
@@ -118,6 +112,7 @@ namespace TestWork
             employeeCard.InsertButton.Enabled = false;
             employeeCard.UpdateButton.Enabled = true;
             employeeCard.PromoteButton.Enabled = true;
+            employeeCard.NewEmployeeButton.Enabled = true;
             employeeCard.ShowDialog();
 
         }

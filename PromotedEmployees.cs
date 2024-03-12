@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TestWork.Properties;
 using ArtLibrary.Sql;
@@ -65,7 +57,6 @@ namespace TestWork
                 {
                     for (int j = 0; j < promotedDataGrid.ColumnCount; j++)
                     {
-
                         ExcelApp.Cells[i + 2, j + 1] = promotedDataGrid.Rows[i].Cells[j].Value.ToString();
                     }
                 }

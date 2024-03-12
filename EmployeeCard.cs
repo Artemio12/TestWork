@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using ArtLibrary.ControlLogic;
 using ArtLibrary.Sql;
 using TestWork.Properties;
-using Columns = TestWork.EnumEmpoyeesColumnNames;
 
 namespace TestWork
 {
@@ -21,17 +11,12 @@ namespace TestWork
         Employee,
         PromotedEmployee
     }
-    public enum EnumTags
-    {
-        EmployeeDataControls
-
-    }
+   
     public partial class EmployeeCard : Form
     {
         private ViewerInDataGrid viewerInDataGrid;
         private MainForm mainForm;
      
-
         public string Id { get => idTextBox.Text; set => idTextBox.Text = value; }
         public string EmployeeNumber { get => employeeNumberTextBox.Text; set => employeeNumberTextBox.Text = value; }
         public string Surname { get => surnameTextBox.Text; set => surnameTextBox.Text = value; }
@@ -53,8 +38,6 @@ namespace TestWork
 
         private string educationCmd = "SELECT Education FROM [Education]";
         private string departmentCmd = "SELECT Department FROM [Departments]";
-
-        private DateTime emptyDate = new DateTime();
 
         public EmployeeCard()
         {
@@ -99,6 +82,7 @@ namespace TestWork
                 cmd.Parameters.AddWithValue("EducationCode", educationCode);
                 cmd.Parameters.AddWithValue("HireDate", hireDatePicker.Value);
                 if (dismissalDatePicker.Checked) cmd.Parameters.AddWithValue("DismissalDate", dismissalDatePicker.Value);
+                else cmd.Parameters.AddWithValue("DismissalDate", DBNull.Value);
 
                 connection.Open();
                 cmd.ExecuteNonQuery();
