@@ -103,8 +103,14 @@ namespace TestWork
                     Department = mainDataGrid.CurrentRow.Cells["Department"].Value.ToString(),
                     Education = mainDataGrid.CurrentRow.Cells["Education"].Value.ToString(),
                     HireDate = (DateTime)mainDataGrid.CurrentRow.Cells["HireDate"].Value,
-                    DismissalDate = (DateTime)mainDataGrid.CurrentRow.Cells["DismissalDate"].Value
                 };
+
+                if (mainDataGrid.CurrentRow.Cells["DismissalDate"].Value != DBNull.Value)
+                {
+                    employeeCard.DismissalDate = (DateTime)mainDataGrid.CurrentRow.Cells["DismissalDate"].Value;
+                    employeeCard.DismissTimePick.Checked = true;
+                }
+                
                 
                 employeeCards.Add(employeeCard);
 

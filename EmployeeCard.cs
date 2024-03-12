@@ -35,6 +35,7 @@ namespace TestWork
         public Button NewEmployeeButton => newEmployeeButton;
         public Button DeleteButton => deleteButton;
         public Button PromoteButton => promoteButton;
+        public DateTimePicker DismissTimePick => dismissalDatePicker;
 
         private string educationCmd = "SELECT Education FROM [Education]";
         private string departmentCmd = "SELECT Department FROM [Departments]";
