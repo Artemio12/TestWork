@@ -4,16 +4,23 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ArtLibrary.ControlLogic;
+using ArtLibrary.Sql;
 using TestWork.Properties;
 using Columns = TestWork.EnumEmpoyeesColumnNames;
 
 namespace TestWork
 {
+    public enum EnumTables
+    {
+        Employee,
+        PromotedEmployee
+    }
     public enum EnumTags
     {
         EmployeeDataControls
@@ -22,7 +29,9 @@ namespace TestWork
     public partial class EmployeeCard : Form
     {
         private List<Control> controls;
-        private VisibilityInverter<Control> inverter;
+        private ViewerInDataGrid viewerInDataGrid;
+        private MainForm mainForm;
+     
 
         public string Id { get => idTextBox.Text; set => idTextBox.Text = value; }
         public string EmployeeNumber { get => employeeNumberTextBox.Text; set => employeeNumberTextBox.Text = value; }
@@ -41,6 +50,10 @@ namespace TestWork
         public Button UpdateButton => updateButton;
         public Button NewEmployeeButton => newEmployeeButton;
         public Button DeleteButton => deleteButton;
+        public Button PromoteButton => promoteButton;
+
+        private string educationCmd = "SELECT Education FROM [Education]";
+        private string departmentCmd = "SELECT Department FROM [Departments]";
 
         public EmployeeCard()
         {
@@ -49,14 +62,11 @@ namespace TestWork
 
         private void EmployeeCard_Load(object sender, EventArgs e)
         {
-            var educationCmd = "SELECT Education FROM [Education]";
-            var departmentCmd = "SELECT Department FROM [Departments]";
             GetItems(educationComboBox, educationCmd);
             GetItems(departmentComboBox, departmentCmd);
 
             controls = new List<Control>();
-            inverter = new VisibilityInverter<Control>();
-           
+            mainForm = new MainForm();
             
             controls = (from Control v in cardGroupBox.Controls
                        where v.Tag?.ToString() == nameof(EnumTags.EmployeeDataControls)
@@ -73,17 +83,17 @@ namespace TestWork
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            using(var connection = new SqlConnection(Settings.Default.ConnectionStr))
-            using (var cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = $"DELETE [Employees] WHERE Id = {idTextBox.Text}";
-                connection.Open();
-                cmd.ExecuteNonQuery();
-            }
+            if (tableComboBox.SelectedIndex != -1)
+                viewerInDataGrid.DeleteSelectedRows(mainForm.MainDataGrid, Settings.Default.ConnectionStr, tableComboBox.Text);
+            else MessageBox.Show("Выберите таблицу для удаления данных");
+            
         }
 
         private void InsertButton_Click(object sender, EventArgs e)
         {
+            var departmentCode = departmentComboBox.SelectedIndex + 1;
+            var educationCode = educationComboBox.SelectedIndex + 1;
+            
             using (var connection = new SqlConnection (Settings.Default.ConnectionStr))
             using (var cmd = connection.CreateCommand())
             {
@@ -94,10 +104,12 @@ namespace TestWork
                 cmd.Parameters.AddWithValue("Patronymic", patronymicTextBox.Text);
                 cmd.Parameters.AddWithValue("Sex", sexComboBox.Text);
                 cmd.Parameters.AddWithValue("BirthdayDate", birthdayDatePicker.Value);
-                cmd.Parameters.AddWithValue("DepartmentCode", departmentComboBox.SelectedIndex + 1);
-                cmd.Parameters.AddWithValue("EducationCode", educationComboBox.SelectedIndex + 1);
+                cmd.Parameters.AddWithValue("DepartmentCode", departmentCode);
+                cmd.Parameters.AddWithValue("EducationCode", educationCode);
                 cmd.Parameters.AddWithValue("HireDate", hireDatePicker.Value);
-                cmd.Parameters.AddWithValue("DismissalDate", dismissalDatePicker.Value);
+                if (!dismissalDatePicker.Checked) cmd.Parameters.AddWithValue("DismissalDate", "");
+                else cmd.Parameters.AddWithValue("DismissalDate", dismissalDatePicker.Value);
+
 
                 connection.Open();
                 cmd.ExecuteNonQuery();
@@ -106,9 +118,9 @@ namespace TestWork
 
         private void UpdateButton_Click(object sender, EventArgs e)
         {
-            UpdateDates();
-            
-
+            if (tableComboBox.SelectedIndex != -1)
+                UpdateSwitch(tableComboBox.Text);
+            else MessageBox.Show("Выберите таблицу для обновления данных");
         }
 
         private void AddPromotedEmployees()
@@ -149,9 +161,9 @@ namespace TestWork
 
         private void PromoteButton_Click(object sender, EventArgs e)
         {
-            if (promotionTextBlock.Text != string.Empty)
+            if (promotionTextBlock.Text != string.Empty || nameTextBox.Text != string.Empty || surnameTextBox.Text != string.Empty || patronymicTextBox.Text !=string.Empty)
                 AddPromotedEmployees();
-            else MessageBox.Show("Укажите процент повышения");
+            else MessageBox.Show("Не хватает данных.Укажите фамилию (Surname), имя (Name), отчество (Patronymic) и  процент повышения (PercentPromotion(%))");
         }
 
         private void GetItems(ComboBox comboBox, string command)
@@ -170,15 +182,57 @@ namespace TestWork
             }
         }
 
-        private void UpdateDates()
+        private void UpdateEmployeeDates()
+        {
+            var departmentCode = departmentComboBox.SelectedIndex + 1;
+            var educationCode = departmentComboBox.SelectedIndex + 1;
+            using (var connection = new SqlConnection(Settings.Default.ConnectionStr))
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE [Employees] SET EmployeeNumber = @empNumber, Surname = @surname, Name = @name, Patronymic = @patronymic, Sex = @sex, BirthdayDate = @birthdayDate, DepartmentCode = @departmentCode, EducationCode = @educationCode, HireDate = @hire, DismissalDate = @dismissal WHERE Id = @id";
+                
+                cmd.Parameters.AddWithValue("@id", idTextBox.Text);
+                cmd.Parameters.AddWithValue("@empNumber", employeeNumberTextBox.Text);
+                cmd.Parameters.AddWithValue("@surname", surnameTextBox.Text);
+                cmd.Parameters.AddWithValue("@name", nameTextBox.Text);
+                cmd.Parameters.AddWithValue("@patronymic", patronymicTextBox.Text);
+                cmd.Parameters.AddWithValue("@sex", sexComboBox.Text);
+                cmd.Parameters.AddWithValue("@birthdayDate", birthdayDatePicker.Value);
+                cmd.Parameters.AddWithValue("@departmentCode", departmentCode);
+                cmd.Parameters.AddWithValue("@educationCode", educationCode);
+                cmd.Parameters.AddWithValue("@hire", hireDatePicker.Value);
+                cmd.Parameters.AddWithValue("@dismissal", dismissalDatePicker.Value);
+
+                connection.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+        private void UpdatePromotedEmployee()
         {
             using (var connection = new SqlConnection(Settings.Default.ConnectionStr))
             using (var cmd = connection.CreateCommand())
             {
-                cmd.CommandText = "UPDATE [Employees] SET ";
-
+                cmd.CommandText = $"UPDATE [PromotedEmployees] SET PerсentPromotion = @percent WHERE Surname = @surname AND Name = @name AND Patronymic = @patronymic";
+                cmd.Parameters.AddWithValue("@surname", surnameTextBox.Text);
+                cmd.Parameters.AddWithValue("@name", nameTextBox.Text);
+                cmd.Parameters.AddWithValue("@patronymic", patronymicTextBox.Text);
+                cmd.Parameters.AddWithValue("@percent", promotionTextBlock.Text);
+                connection.Open();
+                cmd.ExecuteNonQuery();
             }
+        }
 
+        private void UpdateSwitch(string tableName)
+        {
+            switch (tableName)
+            {
+                case nameof(EnumTables.Employee):
+                    UpdateEmployeeDates();
+                    break;
+                case nameof(EnumTables.PromotedEmployee):
+                    UpdatePromotedEmployee();
+                    break;
+            }
         }
     }
 }

@@ -23,10 +23,11 @@ namespace TestWork
         private PromotedEmployees promotedEmployees;
         private EmployeeCard employeeCard;
 
+        public DataGridView MainDataGrid => mainDataGrid;
+
         private List<EmployeeCard> employeeCards;
 
-        private string startCmd = "SELECT Employees.Id, Employees.EmployeeNumber, Employees.Surname, Employees.Name, Employees.Patronymic, Employees.Sex, Employees.BirthdayDate, Departments.Department, Education.Education, Employees.HireDate,Employees.DismissalDate FROM Employees" +
-            " INNER JOIN Departments ON Employees.DepartmentCode = Departments.Id INNER JOIN Education ON Employees.EducationCode = Education.Id";
+        private string startCmd = "SELECT Employees.Id, Employees.EmployeeNumber, Employees.Surname, Employees.Name, Employees.Patronymic, Employees.Sex, Employees.BirthdayDate, Departments.Department, Education.Education, Employees.HireDate,Employees.DismissalDate FROM Employees INNER JOIN Departments ON Employees.DepartmentCode = Departments.Id INNER JOIN Education ON Employees.EducationCode = Education.Id";
         public MainForm()
         {
             InitializeComponent();
@@ -43,10 +44,15 @@ namespace TestWork
 
         private void AddButton_Click(object sender, EventArgs e)
         {
+            var MaxID = mainDataGrid.Rows.Cast<DataGridViewRow>()
+                        .Max(r => Convert.ToInt32(r.Cells["Id"].Value));
+
             employeeCard = new EmployeeCard();
+
             employeeCard.UpdateButton.Enabled = false;
-            employeeCard.NewEmployeeButton.Enabled = false;
             employeeCard.DeleteButton.Enabled = false;
+            employeeCard.PromoteButton.Enabled = false;
+            employeeCard.Id = Convert.ToString(MaxID + 1);
             employeeCard.ShowDialog();
             employeeCards.Add(employeeCard);
         }
@@ -82,25 +88,38 @@ namespace TestWork
 
         private void MainDataGrid_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            employeeCard = new EmployeeCard
+            foreach (var element in employeeCards)
             {
-                Id = mainDataGrid.CurrentRow.Cells["Id"].Value.ToString(),
-                EmployeeNumber = mainDataGrid.CurrentRow.Cells["EmployeeNumber"].Value.ToString(),
-                Surname = mainDataGrid.CurrentRow.Cells["Surname"].Value.ToString(),
-                EmployeeName = mainDataGrid.CurrentRow.Cells["Name"].Value.ToString(),
-                Patronymic = mainDataGrid.CurrentRow.Cells["Patronymic"].Value.ToString(),
-                Sex = mainDataGrid.CurrentRow.Cells["Sex"].Value.ToString(),
-                BirthdayDate = (DateTime)mainDataGrid.CurrentRow.Cells["BirthdayDate"].Value,
-                Department = mainDataGrid.CurrentRow.Cells["Department"].Value.ToString(),
-                Education = mainDataGrid.CurrentRow.Cells["Education"].Value.ToString(),
-                HireDate = (DateTime)mainDataGrid.CurrentRow.Cells["HireDate"].Value,
-                DismissalDate = (DateTime)mainDataGrid.CurrentRow.Cells["DismissalDate"].Value
-            };
+                if (element.Id == mainDataGrid.CurrentRow.Cells["Id"].Value.ToString())
+                {
+                    employeeCard = element;
+                }
+            }
+            if (employeeCard == null)
+            {
+                employeeCard = new EmployeeCard
+                {
+                    Id = mainDataGrid.CurrentRow.Cells["Id"].Value.ToString(),
+                    EmployeeNumber = mainDataGrid.CurrentRow.Cells["EmployeeNumber"].Value.ToString(),
+                    Surname = mainDataGrid.CurrentRow.Cells["Surname"].Value.ToString(),
+                    EmployeeName = mainDataGrid.CurrentRow.Cells["Name"].Value.ToString(),
+                    Patronymic = mainDataGrid.CurrentRow.Cells["Patronymic"].Value.ToString(),
+                    Sex = mainDataGrid.CurrentRow.Cells["Sex"].Value.ToString(),
+                    BirthdayDate = (DateTime)mainDataGrid.CurrentRow.Cells["BirthdayDate"].Value,
+                    Department = mainDataGrid.CurrentRow.Cells["Department"].Value.ToString(),
+                    Education = mainDataGrid.CurrentRow.Cells["Education"].Value.ToString(),
+                    HireDate = (DateTime)mainDataGrid.CurrentRow.Cells["HireDate"].Value,
+                    DismissalDate = (DateTime)mainDataGrid.CurrentRow.Cells["DismissalDate"].Value
+                };
+                
+                employeeCards.Add(employeeCard);
 
+            }
             employeeCard.InsertButton.Enabled = false;
+            employeeCard.UpdateButton.Enabled = true;
+            employeeCard.PromoteButton.Enabled = true;
             employeeCard.ShowDialog();
 
-            if (!employeeCards.Contains(employeeCard)) employeeCards.Add(employeeCard);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -141,6 +160,7 @@ namespace TestWork
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
+            addButton.Enabled = false;
             viewerInDataGrid.ClearTable(mainDataGrid, Settings.Default.ConnectionStr, "Employees");
         }
     }

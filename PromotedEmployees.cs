@@ -51,6 +51,7 @@ namespace TestWork
         {
             if (promotedDataGrid.Rows.Count != 0)
             {
+                Excel.Application ExcelApp = new Excel.Application();
                 ExcelApp.Application.Workbooks.Add(Type.Missing);
                 ExcelApp.Columns.ColumnWidth = 15;
 
