@@ -28,7 +28,6 @@ namespace TestWork
     }
     public partial class EmployeeCard : Form
     {
-        private List<Control> controls;
         private ViewerInDataGrid viewerInDataGrid;
         private MainForm mainForm;
      
@@ -55,6 +54,8 @@ namespace TestWork
         private string educationCmd = "SELECT Education FROM [Education]";
         private string departmentCmd = "SELECT Department FROM [Departments]";
 
+        private DateTime emptyDate = new DateTime();
+
         public EmployeeCard()
         {
             InitializeComponent();
@@ -62,23 +63,14 @@ namespace TestWork
 
         private void EmployeeCard_Load(object sender, EventArgs e)
         {
+            mainForm = new MainForm();
             GetItems(educationComboBox, educationCmd);
             GetItems(departmentComboBox, departmentCmd);
-
-            controls = new List<Control>();
-            mainForm = new MainForm();
-            
-            controls = (from Control v in cardGroupBox.Controls
-                       where v.Tag?.ToString() == nameof(EnumTags.EmployeeDataControls)
-                       select v).ToList();
         }
 
         private void NewEmployeeButton_Click(object sender, EventArgs e)
         {
-            foreach (var element in controls)
-            {
-                element.Text = string.Empty;
-            }
+            insertButton.Enabled = true;
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)
@@ -86,7 +78,6 @@ namespace TestWork
             if (tableComboBox.SelectedIndex != -1)
                 viewerInDataGrid.DeleteSelectedRows(mainForm.MainDataGrid, Settings.Default.ConnectionStr, tableComboBox.Text);
             else MessageBox.Show("Выберите таблицу для удаления данных");
-            
         }
 
         private void InsertButton_Click(object sender, EventArgs e)
@@ -107,9 +98,7 @@ namespace TestWork
                 cmd.Parameters.AddWithValue("DepartmentCode", departmentCode);
                 cmd.Parameters.AddWithValue("EducationCode", educationCode);
                 cmd.Parameters.AddWithValue("HireDate", hireDatePicker.Value);
-                if (!dismissalDatePicker.Checked) cmd.Parameters.AddWithValue("DismissalDate", "");
-                else cmd.Parameters.AddWithValue("DismissalDate", dismissalDatePicker.Value);
-
+                if (dismissalDatePicker.Checked) cmd.Parameters.AddWithValue("DismissalDate", dismissalDatePicker.Value);
 
                 connection.Open();
                 cmd.ExecuteNonQuery();

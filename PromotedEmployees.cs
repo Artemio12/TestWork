@@ -61,14 +61,16 @@ namespace TestWork
                 ExcelApp.Cells[1, 4] = nameof(EnumEmpoyeesColumnNames.Patronymic);
                 ExcelApp.Cells[1, 5] = nameof(EnumEmpoyeesColumnNames.PerсentPromotion);
 
-                for (int i = 0; i < promotedDataGrid.ColumnCount; i++)
+                for (int i = 0; i < promotedDataGrid.RowCount-1; i++)
                 {
-                    for (int j = 0; j < promotedDataGrid.RowCount; j++)
+                    for (int j = 0; j < promotedDataGrid.ColumnCount; j++)
                     {
-                        ExcelApp.Cells[j + 2, i + 1] = promotedDataGrid[i, j].Value.ToString();
+
+                        ExcelApp.Cells[i + 2, j + 1] = promotedDataGrid.Rows[i].Cells[j].Value.ToString();
                     }
                 }
                 ExcelApp.Visible = true;
+                ExcelApp.UserControl = true;
 
             }
             else MessageBox.Show("promotedDataGrid пуст, заполните его данными");
